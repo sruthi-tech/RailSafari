@@ -1,0 +1,198 @@
+-- ============================================================
+-- RailSafari Database Schema - Stored Procedures & Functions
+-- Database: Oracle Database
+-- ============================================================
+
+-- 1. BOOK_TICKET Stored Procedure
+CREATE OR REPLACE PROCEDURE BOOK_TICKET (
+    P_USER_ID NUMBER,
+    P_SCHEDULE_ID NUMBER,
+    P_PASSENGER_NAME VARCHAR2,
+    P_AGE NUMBER,
+    P_GENDER VARCHAR2,
+    P_SEAT_ID NUMBER,
+    P_QUOTA VARCHAR2,
+    P_FARE NUMBER
+)
+AS
+    V_BOOKING_ID NUMBER;
+    V_PNR VARCHAR2(20);
+    V_SEAT_STATUS VARCHAR2(20);
+BEGIN
+    SELECT SEAT_STATUS
+    INTO V_SEAT_STATUS
+    FROM SEAT
+    WHERE SEAT_ID = P_SEAT_ID
+    FOR UPDATE;
+
+    IF V_SEAT_STATUS <> 'AVAILABLE' THEN
+        RAISE_APPLICATION_ERROR(-20001, 'SEAT IS NOT AVAILABLE');
+    END IF;
+
+    V_BOOKING_ID := BOOKING_SEQ.NEXTVAL;
+    V_PNR := 'PNR' || LPAD(V_BOOKING_ID, 6, '0');
+
+    INSERT INTO BOOKING
+    (
+        BOOKING_ID,
+        USER_ID,
+        SCHEDULE_ID,
+        QUOTA,
+        TOTAL_FARE,
+        BOOKING_STATUS,
+        PNR
+    )
+    VALUES
+    (
+        V_BOOKING_ID,
+        P_USER_ID,
+        P_SCHEDULE_ID,
+        P_QUOTA,
+        P_FARE,
+        'CONFIRMED',
+        V_PNR
+    );
+
+    INSERT INTO PASSENGER
+    (
+        PASSENGER_ID,
+        BOOKING_ID,
+        PASSENGER_NAME,
+        AGE,
+        GENDER,
+        SEAT_ID
+    )
+    VALUES
+    (
+        PASSENGER_SEQ.NEXTVAL,
+        V_BOOKING_ID,
+        P_PASSENGER_NAME,
+        P_AGE,
+        P_GENDER,
+        P_SEAT_ID
+    );
+
+    UPDATE SEAT
+    SET SEAT_STATUS = 'BOOKED'
+    WHERE SEAT_ID = P_SEAT_ID;
+
+    COMMIT;
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RAISE_APPLICATION_ERROR(-20002, 'SEAT DOES NOT EXIST');
+
+    WHEN OTHERS THEN
+        ROLLBACK;
+        RAISE;
+END;
+/
+
+-- 2. CANCEL_TICKET Stored Procedure
+CREATE OR REPLACE PROCEDURE CANCEL_TICKET (
+    P_BOOKING_ID NUMBER,
+    P_REASON VARCHAR2
+)
+AS
+    V_SEAT_ID NUMBER;
+    V_FARE NUMBER;
+    V_STATUS VARCHAR2(20);
+BEGIN
+    SELECT B.TOTAL_FARE, B.BOOKING_STATUS
+    INTO V_FARE, V_STATUS
+    FROM BOOKING B
+    WHERE B.BOOKING_ID = P_BOOKING_ID
+    FOR UPDATE;
+
+    IF V_STATUS = 'CANCELLED' THEN
+        RAISE_APPLICATION_ERROR(-20003, 'BOOKING IS ALREADY CANCELLED');
+    END IF;
+
+    BEGIN
+        SELECT SEAT_ID
+        INTO V_SEAT_ID
+        FROM PASSENGER
+        WHERE BOOKING_ID = P_BOOKING_ID
+        AND ROWNUM = 1;
+
+        UPDATE SEAT
+        SET SEAT_STATUS = 'AVAILABLE'
+        WHERE SEAT_ID = V_SEAT_ID;
+
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            V_SEAT_ID := NULL;
+    END;
+
+    UPDATE BOOKING
+    SET BOOKING_STATUS = 'CANCELLED'
+    WHERE BOOKING_ID = P_BOOKING_ID;
+
+    INSERT INTO CANCELLATION
+    (
+        CANCELLATION_ID,
+        BOOKING_ID,
+        REASON,
+        REFUND_AMOUNT
+    )
+    VALUES
+    (
+        CANCELLATION_SEQ.NEXTVAL,
+        P_BOOKING_ID,
+        P_REASON,
+        V_FARE
+    );
+
+    INSERT INTO PAYMENT
+    (
+        PAYMENT_ID,
+        BOOKING_ID,
+        AMOUNT,
+        PAYMENT_METHOD,
+        PAYMENT_STATUS
+    )
+    VALUES
+    (
+        PAYMENT_SEQ.NEXTVAL,
+        P_BOOKING_ID,
+        V_FARE,
+        'REFUND',
+        'REFUNDED'
+    );
+
+    COMMIT;
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RAISE_APPLICATION_ERROR(-20004, 'BOOKING DOES NOT EXIST');
+
+    WHEN OTHERS THEN
+        ROLLBACK;
+        RAISE;
+END;
+/
+
+-- 3. CALCULATE_FARE Function
+CREATE OR REPLACE FUNCTION CALCULATE_FARE (
+    P_DISTANCE NUMBER,
+    P_CLASS VARCHAR2,
+    P_PASSENGERS NUMBER
+)
+RETURN NUMBER
+AS
+    V_RATE NUMBER;
+BEGIN
+    CASE P_CLASS
+        WHEN 'SL' THEN V_RATE := 1.00;
+        WHEN '3A' THEN V_RATE := 2.00;
+        WHEN '2A' THEN V_RATE := 3.00;
+        WHEN '1A' THEN V_RATE := 4.00;
+        WHEN 'CC' THEN V_RATE := 1.50;
+        WHEN '2S' THEN V_RATE := 0.60;
+        ELSE
+            RAISE_APPLICATION_ERROR(-20010, 'INVALID CLASS');
+    END CASE;
+
+    RETURN P_DISTANCE * V_RATE * P_PASSENGERS;
+END;
+/
