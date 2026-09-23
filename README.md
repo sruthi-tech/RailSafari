@@ -407,7 +407,7 @@ Aditi	Team Member
 
 👥 Team
 
-Rahaf · Ayesha · Rehas · Aditi
+Rahaf Ayesha Rehas · Aditi
 
 ⸻
 
