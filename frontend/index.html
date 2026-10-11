@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RailSafari - Official Train Ticket Reservation System</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ================= LANGUAGE ALERT MODAL ================= -->
+  <div id="alert-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">Alert</div>
+      <div class="modal-body">
+        <div class="modal-logo">🚆</div>
+        <h3 class="hindi-text">रेल सफारी में आपका स्वागत है</h3>
+        <h2>Welcome to RailSafari</h2>
+        <p class="hindi-sub">कृपया अपनी पसंदीदा भाषा का चयन करें</p>
+        <p class="sub-text">Please select your preferred language.</p>
+        <div class="modal-buttons">
+          <button class="btn-lang btn-orange" onclick="closeModal()">हिंदी</button>
+          <button class="btn-lang btn-orange" onclick="closeModal()">English</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= PAYMENT GATEWAY MODAL ================= -->
+  <div id="payment-modal" class="modal-overlay hidden">
+    <div class="modal-card payment-card">
+      <div class="modal-header">RailSafari Payment Gateway (iPay)</div>
+      <div class="modal-body">
+        <div class="payment-summary">
+          <p><strong>Total Fare:</strong> <span class="fare-amount">₹525.00</span></p>
+          <p class="sub-text">Includes GST and IRCTC Convenience Fee</p>
+        </div>
+
+        <div class="pay-methods">
+          <button class="pay-tab active" onclick="switchPayTab('upi')">UPI / QR</button>
+          <button class="pay-tab" onclick="switchPayTab('card')">Card</button>
+          <button class="pay-tab" onclick="switchPayTab('net')">NetBanking</button>
+        </div>
+
+        <form id="payment-form" onsubmit="processPayment(event)">
+          <div id="pay-upi-view">
+            <div class="input-field">
+              <label>Enter UPI ID (GPay / PhonePe / Paytm)</label>
+              <input type="text" id="upi-id" placeholder="username@upi">
+            </div>
+          </div>
+
+          <div id="pay-card-view" class="hidden">
+            <div class="input-field">
+              <label>Card Number</label>
+              <input type="text" placeholder="1234 5678 9012 3456" maxlength="16">
+            </div>
+            <div class="form-row-2">
+              <div class="input-field">
+                <label>Expiry</label>
+                <input type="text" placeholder="MM/YY" maxlength="5">
+              </div>
+              <div class="input-field">
+                <label>CVV</label>
+                <input type="password" placeholder="123" maxlength="3">
+              </div>
+            </div>
+          </div>
+
+          <div id="pay-net-view" class="hidden">
+            <div class="input-field">
+              <label>Select Bank</label>
+              <select>
+                <option>State Bank of India (SBI)</option>
+                <option>HDFC Bank</option>
+                <option>ICICI Bank</option>
+                <option>Axis Bank</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-search-orange btn-block" id="pay-btn">Make Payment & Confirm Ticket</button>
+          <button type="button" class="btn-dark-blue btn-block" onclick="cancelPayment()" style="background:#64748b; margin-top:8px;">Cancel</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= TOP HEADER & NAVBAR ================= -->
+  <header>
+    <div class="top-bar">
+      <div class="top-bar-left">
+        <span id="live-time">--/--/---- [--:--:--]</span> | 
+        <span class="font-resize">A- | A | A+</span> | 
+        <span>हिंदी</span>
+      </div>
+    </div>
+
+    <div class="main-header">
+      <div class="header-logo left-logo">
+        <div class="logo-circle">RS</div>
+        <div class="logo-text">RAILSAFARI</div>
+      </div>
+
+      <nav class="nav-links">
+        <button class="nav-item btn-dark-blue" onclick="showLayout('auth-layout')">LOGIN / REGISTER</button>
+        <button class="nav-item text-red" onclick="showLayout('dashboard-layout')">TRAINS</button>
+        <span class="nav-item">MEALS</span>
+        <button class="nav-item btn-dark-blue">LOYALTY</button>
+        <button class="nav-item btn-dark-blue" onclick="showLayout('portal-layout')">MY BOOKINGS</button>
+      </nav>
+
+      <div class="header-logo right-logo">
+        <div class="logo-circle irctc-blue">RS</div>
+      </div>
+    </div>
+
+    <div class="beta-banner">
+      <span class="badge-new">NEW</span>
+      Explore the beta version of our new RailSafari website and give your feedback
+      <button class="btn-beta">Explore beta now</button>
+      <span class="close-x" onclick="this.parentElement.style.display='none'">×</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- ================= LAYOUT 1: AUTH (LOGIN / REGISTER) ================= -->
+    <section id="auth-layout" class="layout hidden">
+      <div class="center-wrapper">
+        <div class="booking-card auth-card">
+          <div class="card-tabs">
+            <button id="tab-login" class="tab-btn active" onclick="toggleAuthTab('login')">LOGIN</button>
+            <button id="tab-signup" class="tab-btn" onclick="toggleAuthTab('signup')">REGISTER</button>
+          </div>
+
+          <form id="login-form" onsubmit="handleLogin(event)">
+            <div class="input-field">
+              <label>Email / User ID</label>
+              <input type="email" id="login-email" placeholder="Enter Email" required>
+            </div>
+            <div class="input-field">
+              <label>Password</label>
+              <input type="password" id="login-password" placeholder="Enter Password" required>
+            </div>
+            <button type="submit" class="btn-search-orange btn-block">SIGN IN</button>
+          </form>
+
+          <form id="signup-form" class="hidden" onsubmit="handleSignup(event)">
+            <div class="input-field">
+              <label>Full Name</label>
+              <input type="text" id="signup-name" placeholder="Full Name" required>
+            </div>
+            <div class="input-field">
+              <label>Email Address</label>
+              <input type="email" id="signup-email" placeholder="Email" required>
+            </div>
+            <div class="input-field">
+              <label>Password</label>
+              <input type="password" id="signup-password" placeholder="Password" required>
+            </div>
+            <button type="submit" class="btn-search-orange btn-block">CREATE ACCOUNT</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= LAYOUT 2: DASHBOARD (SEARCH & TRAINS) ================= -->
+    <section id="dashboard-layout" class="layout">
+      <div class="hero-section">
+        <div class="hero-content">
+          <div class="booking-card">
+            <div class="card-tabs">
+              <button class="tab-btn active">PNR STATUS</button>
+              <button class="tab-btn">CHARTS / VACANCY</button>
+            </div>
+
+            <h2 class="card-title">BOOK TICKET</h2>
+
+            <form id="search-form" onsubmit="handleSearchTrains(event)">
+              <div class="form-row-2">
+                <div class="input-field">
+                  <label>From</label>
+                  <input type="text" id="search-from" placeholder="e.g. New Delhi" required>
+                </div>
+                <div class="swap-icon">⇄</div>
+                <div class="input-field">
+                  <label>To</label>
+                  <input type="text" id="search-to" placeholder="e.g. Mumbai" required>
+                </div>
+              </div>
+
+              <div class="form-row-2">
+                <div class="input-field">
+                  <label>Date</label>
+                  <input type="date" id="search-date" required>
+                </div>
+                <div class="input-field">
+                  <label>Class</label>
+                  <select id="search-class">
+                    <option>All Classes</option>
+                    <option>AC First Class (1A)</option>
+                    <option>AC 2 Tier (2A)</option>
+                    <option>AC 3 Tier (3A)</option>
+                    <option>Sleeper (SL)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="input-field">
+                <label>Quota</label>
+                <select id="search-quota">
+                  <option>GENERAL</option>
+                  <option>LADIES</option>
+                  <option>TATKAL</option>
+                  <option>PREMIUM TATKAL</option>
+                </select>
+              </div>
+
+              <div class="checkbox-group">
+                <label><input type="checkbox"> Person With Disability Concession</label>
+                <label><input type="checkbox"> Flexible With Date</label>
+                <label><input type="checkbox"> Railway Pass Concession</label>
+              </div>
+
+              <button type="submit" class="btn-search-orange">Search Trains</button>
+            </form>
+          </div>
+
+          <div class="hero-banner-text">
+            <h1>RAILSAFARI</h1>
+            <p>Safety | Security | Punctuality</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="train-results" class="results-wrapper"></div>
+    </section>
+
+    <!-- ================= LAYOUT 3: BOOKING & SEAT PICKER ================= -->
+    <section id="booking-layout" class="layout hidden">
+      <div class="center-wrapper">
+        <div class="booking-card wide-card">
+          <h2 class="card-title">Passenger Details & Seat Selection</h2>
+          <div id="selected-train-info" class="train-badge"></div>
+
+          <form id="booking-form" onsubmit="openPaymentModal(event)">
+            <div class="form-row-3">
+              <div class="input-field">
+                <label>Passenger Name</label>
+                <input type="text" id="pass-name" placeholder="Full Name" required>
+              </div>
+              <div class="input-field">
+                <label>Age</label>
+                <input type="number" id="pass-age" placeholder="Age" min="1" max="100" required>
+              </div>
+              <div class="input-field">
+                <label>Gender</label>
+                <select id="pass-gender">
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
+              </div>
+            </div>
+
+            <h3 class="section-sub">Select Seat Number</h3>
+            <div class="seat-grid" id="seat-grid"></div>
+            <input type="hidden" id="selected-seat-no" required>
+
+            <button type="submit" class="btn-search-orange btn-block">Proceed to Payment (₹525)</button>
+          </form>
+
+          <div id="ticket-container" class="ticket-view hidden">
+            <div class="ticket-header-irctc">
+              <h3>🎟️ RAILSAFARI E-TICKET CONFIRMATION</h3>
+              <span>PNR: <strong id="t-pnr">--</strong></span>
+            </div>
+            <div class="ticket-details">
+              <p><strong>Passenger:</strong> <span id="t-name">--</span> (<span id="t-gender">--</span>, <span id="t-age">--</span> yrs)</p>
+              <p><strong>Train:</strong> <span id="t-train">--</span></p>
+              <p><strong>Seat Assigned:</strong> <span id="t-seat" class="badge-seat">--</span></p>
+              <p><strong>Payment Status:</strong> <span class="status-ok">PAID & CONFIRMED</span></p>
+            </div>
+            <button onclick="window.print()" class="btn-dark-blue btn-block">Print Ticket</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= LAYOUT 4: USER PORTAL ================= -->
+    <section id="portal-layout" class="layout hidden">
+      <div class="center-wrapper">
+        <div class="booking-card wide-card">
+          <h2 class="card-title">My Booked Tickets</h2>
+          <div id="my-bookings-list"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= RAILSAFARI FOOTER ================= -->
+  <footer>
+    <div class="social-bar">
+      Get Connected with us on social networks
+      <div class="social-icons">
+        <span class="s-icon">f</span>
+        <span class="s-icon">t</span>
+        <span class="s-icon">yt</span>
+        <span class="s-icon">in</span>
+      </div>
+    </div>
+
+    <div class="footer-links">
+      <div class="footer-col">
+        <h4>RailSafari Trains</h4>
+        <p>General Information</p>
+        <p>Important Information</p>
+      </div>
+      <div class="footer-col">
+        <h4>How To</h4>
+        <p>RailSafari Official App</p>
+        <p>Refund Rules</p>
+      </div>
+      <div class="footer-col">
+        <h4>E-Services</h4>
+        <p>RailSafari Wallet</p>
+        <p>iPay Gateway</p>
+      </div>
+      <div class="footer-col">
+        <h4>Help & Support</h4>
+        <p>Support Zone</p>
+        <p>About Us</p>
+      </div>
+    </div>
+
+    <div class="copyright">
+      Copyright © 2026 - www.railsafari.com. All Rights Reserved | RailSafari Reservation System
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
