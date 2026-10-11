@@ -3,164 +3,215 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RailSafari - Database-Driven Ticket Reservation System</title>
+  <title>RailSafari | Database-Driven Train Reservation System</title>
   <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
-  <!-- Language Alert Modal -->
-  <div id="alert-modal" class="modal-overlay">
-    <div class="modal-card">
-      <h3>Select Language Preference</h3>
-      <p>RailSafari supports multi-lingual notifications for journey updates.</p>
-      <div class="lang-grid">
-        <button onclick="closeModal()">English</button>
-        <button onclick="closeModal()">Hindi (हिंदी)</button>
-        <button onclick="closeModal()">Marathi (मराठी)</button>
-        <button onclick="closeModal()">Bengali (বাংলা)</button>
-      </div>
-    </div>
+  <!-- Top Announcement Bar -->
+  <div class="top-banner">
+    <span>🔒 DBMS Academic Project | Connected to Oracle Database (FREEPDB1 / localhost:1521)</span>
+    <span id="live-time">Loading clock...</span>
   </div>
 
   <!-- Header Navigation -->
   <header class="navbar">
     <div class="nav-container">
       <div class="brand" onclick="showLayout('dashboard-layout')">
-        <div class="brand-logo">RS</div>
-        <div class="brand-text">
+        <div class="brand-badge">RS</div>
+        <div class="brand-title">
           <h1>RailSafari</h1>
-          <span>Indian Railways Partner</span>
+          <small>Journey Management System</small>
         </div>
       </div>
       <nav class="nav-links">
-        <a href="#" onclick="showLayout('dashboard-layout')">Book Ticket</a>
-        <a href="#" onclick="showLayout('portal-layout')">My Bookings</a>
-        <a href="#" onclick="showLayout('auth-layout')">Account</a>
+        <button class="nav-btn active" onclick="showLayout('dashboard-layout', this)">🚆 Book Ticket</button>
+        <button class="nav-btn" onclick="showLayout('pnr-layout', this)">🔍 PNR Status</button>
+        <button class="nav-btn" onclick="showLayout('portal-layout', this)">🎫 My Bookings</button>
+        <button class="nav-btn" onclick="showLayout('admin-layout', this)">👨‍💼 Admin</button>
+        <button class="nav-btn btn-accent" onclick="showLayout('auth-layout', this)">Account / Login</button>
       </nav>
-      <div class="clock-badge" id="live-time">Loading system clock...</div>
     </div>
   </header>
 
-  <main class="main-content">
+  <main class="main-container">
 
-    <!-- VIEW 1: Authentication View -->
+    <!-- VIEW 1: AUTHENTICATION & DIGILOCKER VERIFICATION -->
     <section id="auth-layout" class="layout hidden">
-      <div class="auth-card">
-        <div class="auth-tabs">
-          <button id="tab-login" class="active" onclick="toggleAuthTab('login')">Sign In</button>
-          <button id="tab-signup" onclick="toggleAuthTab('signup')">Register</button>
+      <div class="auth-grid">
+        <div class="auth-card">
+          <div class="auth-tabs">
+            <button id="tab-login" class="active" onclick="toggleAuthTab('login')">Sign In</button>
+            <button id="tab-signup" onclick="toggleAuthTab('signup')">Register User</button>
+          </div>
+
+          <form id="login-form" onsubmit="handleLogin(event)">
+            <h2>Welcome Back</h2>
+            <p class="subtitle">Access your RailSafari user account</p>
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" id="login-email" required placeholder="arjun@gmail.com">
+            </div>
+            <div class="form-group">
+              <label>Password</label>
+              <input type="password" id="login-password" required placeholder="••••••••">
+            </div>
+            <button type="submit" class="btn-primary">Sign In to Dashboard</button>
+          </form>
+
+          <form id="signup-form" class="hidden" onsubmit="handleSignup(event)">
+            <h2>Create Account</h2>
+            <p class="subtitle">Inserts record into Oracle <code>USERS</code> table using <code>USER_SEQ</code></p>
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" id="signup-name" required placeholder="Arjun Menon">
+            </div>
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input type="tel" id="signup-phone" required placeholder="9876543210">
+            </div>
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" id="signup-email" required placeholder="arjun@gmail.com">
+            </div>
+            <div class="form-group">
+              <label>IRCTC Number (Optional)</label>
+              <input type="text" id="signup-irctc" placeholder="IRCTC_ARJUN">
+            </div>
+            <div class="form-group">
+              <label>Password</label>
+              <input type="password" id="signup-password" required placeholder="••••••••">
+            </div>
+            <button type="submit" class="btn-primary">Register Account</button>
+          </form>
         </div>
 
-        <form id="login-form" onsubmit="handleLogin(event)">
-          <h2>Welcome Back</h2>
-          <p>Sign in to manage your train bookings</p>
-          <div class="form-group">
-            <label for="login-email">Email Address</label>
-            <input type="email" id="login-email" required placeholder="user@example.com">
+        <!-- Simulated DigiLocker Widget -->
+        <div class="digilocker-card">
+          <div class="digi-header">
+            <span class="digi-badge">DigiLocker</span>
+            <h3>Identity Verification</h3>
           </div>
-          <div class="form-group">
-            <label for="login-password">Password</label>
-            <input type="password" id="login-password" required placeholder="••••••••">
+          <p>Links identity for verified booking status and concessions in Oracle DB.</p>
+          <div class="digi-status-box">
+            <div class="status-indicator verified"></div>
+            <div>
+              <strong>VERIFICATION_STATUS: VERIFIED</strong>
+              <small>Token: DL-VERIFIED-2026-X88</small>
+            </div>
           </div>
-          <button type="submit" class="btn-primary">Sign In</button>
-        </form>
-
-        <form id="signup-form" class="hidden" onsubmit="handleSignup(event)">
-          <h2>Create Account</h2>
-          <p>Join RailSafari to book tickets across India</p>
-          <div class="form-group">
-            <label for="signup-name">Full Name</label>
-            <input type="text" id="signup-name" required placeholder="Aditi Sharma">
-          </div>
-          <div class="form-group">
-            <label for="signup-email">Email Address</label>
-            <input type="email" id="signup-email" required placeholder="user@example.com">
-          </div>
-          <div class="form-group">
-            <label for="signup-password">Password</label>
-            <input type="password" id="signup-password" required placeholder="••••••••">
-          </div>
-          <button type="submit" class="btn-primary">Register Account</button>
-        </form>
+          <button class="btn-secondary" onclick="alert('DigiLocker Identity re-verified successfully!')">Verify Identity</button>
+        </div>
       </div>
     </section>
 
-    <!-- VIEW 2: Dashboard & Search View -->
+    <!-- VIEW 2: DASHBOARD & TRAIN SEARCH -->
     <section id="dashboard-layout" class="layout">
-      <div class="search-card">
-        <h2>Book Train Ticket</h2>
+      <div class="search-hero">
+        <div class="hero-header">
+          <h2>Search Trains & Check Availability</h2>
+          <p>Integrated with Oracle Views: <code>AVAILABLE_TRAINS</code> & <code>TRAIN_SEAT_AVAILABILITY</code></p>
+        </div>
+
         <form id="search-form" onsubmit="handleSearchTrains(event)">
-          <div class="form-row">
+          <div class="search-grid">
             <div class="form-group">
-              <label for="search-from">From Station</label>
-              <input type="text" id="search-from" required placeholder="e.g. NDLS or Delhi">
+              <label>From Station</label>
+              <input type="text" id="search-from" required placeholder="ERS or ERNAKULAM JUNCTION">
             </div>
             <div class="form-group">
-              <label for="search-to">To Station</label>
-              <input type="text" id="search-to" required placeholder="e.g. BCT or Mumbai">
+              <label>To Station</label>
+              <input type="text" id="search-to" required placeholder="TVC or THIRUVANANTHAPURAM CENTRAL">
             </div>
             <div class="form-group">
-              <label for="search-date">Journey Date</label>
-              <input type="date" id="search-date" required>
+              <label>Journey Date</label>
+              <input type="date" id="search-date" required value="2026-09-24">
             </div>
             <div class="form-group">
-              <label for="search-quota">Quota</label>
+              <label>Quota</label>
               <select id="search-quota">
                 <option value="GENERAL">GENERAL</option>
                 <option value="TATKAL">TATKAL</option>
                 <option value="LADIES">LADIES</option>
+                <option value="PREMIUM_TATKAL">PREMIUM TATKAL</option>
               </select>
             </div>
           </div>
-          <button type="submit" class="btn-search-orange">Search Trains</button>
+          <button type="submit" class="btn-accent-large">Search Available Trains ➔</button>
         </form>
       </div>
 
-      <div id="train-results" class="results-container"></div>
+      <div id="train-results" class="results-list"></div>
     </section>
 
-    <!-- VIEW 3: Seat Selection & Passenger Form View -->
+    <!-- VIEW 3: SEAT & CLASS SELECTION + PASSENGER FORM -->
     <section id="booking-layout" class="layout hidden">
-      <div class="booking-card">
-        <h2>Select Seat & Passenger Details</h2>
-        <div id="selected-train-info" class="info-banner"></div>
+      <div class="booking-grid">
+        <div class="card">
+          <h2>Seat & Class Selection</h2>
+          <div id="selected-train-info" class="info-banner"></div>
 
-        <div class="seat-picker">
-          <label>Select Seat (Coach S1)</label>
-          <div id="seat-grid" class="grid-seats"></div>
-          <input type="hidden" id="selected-seat-no" required>
+          <div class="class-picker">
+            <label>Select Travel Class (Computed via <code>CALCULATE_FARE</code>)</label>
+            <div class="class-options">
+              <button class="class-btn" onclick="selectClass(this, '1A', 4.00)">1A - Executive AC</button>
+              <button class="class-btn" onclick="selectClass(this, '2A', 3.00)">2A - 2 Tier AC</button>
+              <button class="class-btn active" onclick="selectClass(this, '3A', 2.00)">3A - 3 Tier AC</button>
+              <button class="class-btn" onclick="selectClass(this, 'SL', 1.00)">SL - Sleeper</button>
+              <button class="class-btn" onclick="selectClass(this, 'CC', 1.50)">CC - Chair Car</button>
+              <button class="class-btn" onclick="selectClass(this, '2S', 0.60)">2S - Second Seating</button>
+            </div>
+          </div>
+
+          <div class="seat-picker">
+            <label>Select Available Seat (Updates <code>SEAT_STATUS</code> in Oracle)</label>
+            <div id="seat-grid" class="grid-seats"></div>
+            <input type="hidden" id="selected-seat-no" required>
+          </div>
         </div>
 
-        <form id="booking-form" onsubmit="openPaymentModal(event)">
-          <div class="form-group">
-            <label for="pass-name">Passenger Full Name</label>
-            <input type="text" id="pass-name" required placeholder="Full Name">
-          </div>
-          <div class="form-row">
+        <div class="card">
+          <h2>Passenger Information</h2>
+          <p class="subtitle">Maps directly to Oracle <code>PASSENGER</code> table</p>
+
+          <form id="booking-form" onsubmit="openPaymentModal(event)">
             <div class="form-group">
-              <label for="pass-age">Age</label>
-              <input type="number" id="pass-age" required min="1" max="120" value="25">
+              <label>Passenger Full Name</label>
+              <input type="text" id="pass-name" required placeholder="Passenger Full Name">
             </div>
-            <div class="form-group">
-              <label for="pass-gender">Gender</label>
-              <select id="pass-gender">
-                <option value="MALE">Male</option>
-                <option value="FEMALE">Female</option>
-                <option value="OTHER">Other</option>
-              </select>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Age (1 - 120)</label>
+                <input type="number" id="pass-age" required min="1" max="120" value="28">
+              </div>
+              <div class="form-group">
+                <label>Gender</label>
+                <select id="pass-gender">
+                  <option value="MALE">MALE</option>
+                  <option value="FEMALE">FEMALE</option>
+                  <option value="OTHER">OTHER</option>
+                </select>
+              </div>
             </div>
-          </div>
-          <button type="submit" class="btn-primary">Proceed to Payment (₹525)</button>
-        </form>
+            <div class="fare-summary">
+              <span>Total Fare Amount:</span>
+              <strong id="display-fare">₹420.00</strong>
+            </div>
+            <button type="submit" class="btn-primary">Proceed to Payment Gateway ➔</button>
+          </form>
+        </div>
       </div>
     </section>
 
-    <!-- Payment Modal -->
+    <!-- PAYMENT GATEWAY MODAL -->
     <div id="payment-modal" class="modal-overlay hidden">
-      <div class="payment-card">
-        <h3>iPay Express Gateway</h3>
-        <p>Total Payable: <strong>₹525.00</strong></p>
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>RailSafari Payment Gateway</h3>
+          <span class="secure-tag">🔒 Inserts row into PAYMENT table</span>
+        </div>
+        <p style="margin-top: 10px;">Amount: <strong id="modal-fare" style="color: #059669; font-size: 1.2rem;">₹420.00</strong></p>
 
         <div class="pay-tabs">
           <button type="button" class="pay-tab active" onclick="switchPayTab('upi')">UPI</button>
@@ -170,8 +221,8 @@
 
         <div id="pay-upi-view" class="pay-method-view">
           <div class="form-group">
-            <label>Virtual Payment Address (VPA)</label>
-            <input type="text" placeholder="username@upi" value="user@okicici">
+            <label>UPI VPA</label>
+            <input type="text" value="user@okicici">
           </div>
         </div>
 
@@ -195,32 +246,81 @@
 
         <div class="modal-actions">
           <button type="button" class="btn-secondary" onclick="cancelPayment()">Cancel</button>
-          <button type="button" id="pay-btn" class="btn-primary" onclick="processPayment(event)">Pay & Confirm</button>
+          <button type="button" id="pay-btn" class="btn-primary" onclick="processPayment(event)">Pay & Execute BOOK_TICKET Procedure</button>
         </div>
       </div>
     </div>
 
-    <!-- Ticket Summary View -->
+    <!-- DIGITAL E-TICKET CONFIRMATION -->
     <div id="ticket-container" class="ticket-card hidden">
       <div class="ticket-header">
-        <h2>E-TICKET CONFIRMATION</h2>
-        <span class="status-badge">CONFIRMED</span>
+        <div>
+          <h2>E-TICKET CONFIRMATION</h2>
+          <small>Generated via Oracle PL/SQL <code>BOOK_TICKET</code> procedure</small>
+        </div>
+        <span class="status-badge confirmed">CONFIRMED</span>
       </div>
-      <div class="ticket-body">
-        <p><strong>PNR:</strong> <span id="t-pnr"></span></p>
-        <p><strong>Passenger:</strong> <span id="t-name"></span> (<span id="t-age"></span>, <span id="t-gender"></span>)</p>
-        <p><strong>Train:</strong> <span id="t-train"></span></p>
-        <p><strong>Seat:</strong> <span id="t-seat"></span></p>
+      <div class="ticket-grid">
+        <div><strong>PNR Number:</strong> <span id="t-pnr" class="highlight"></span></div>
+        <div><strong>Passenger:</strong> <span id="t-name"></span> (<span id="t-age"></span> Y, <span id="t-gender"></span>)</div>
+        <div><strong>Train:</strong> <span id="t-train"></span></div>
+        <div><strong>Seat & Coach:</strong> <span id="t-seat"></span></div>
       </div>
-      <button class="btn-primary" onclick="showLayout('dashboard-layout')">Book Another Ticket</button>
+      <button class="btn-primary" onclick="showLayout('dashboard-layout')" style="margin-top: 20px;">Book Another Ticket</button>
     </div>
 
-    <!-- VIEW 4: User Portal View -->
+    <!-- VIEW 4: PNR STATUS LOOKUP -->
+    <section id="pnr-layout" class="layout hidden">
+      <div class="card max-w-600">
+        <h2>PNR Status Lookup</h2>
+        <p class="subtitle">Queries Oracle <code>BOOKING</code> table by <code>PNR</code></p>
+        <div class="form-group">
+          <label>Enter 10-Digit / Sequence PNR</label>
+          <input type="text" id="pnr-input" placeholder="e.g. PNR000001">
+        </div>
+        <button class="btn-primary" onclick="lookupPNR()" style="margin-top: 10px;">Check Status</button>
+        <div id="pnr-result-box" class="pnr-box hidden"></div>
+      </div>
+    </section>
+
+    <!-- VIEW 5: USER BOOKINGS PORTAL -->
     <section id="portal-layout" class="layout hidden">
-      <div class="portal-card">
-        <h2>My Ticket Reservations</h2>
-        <p>Real-time booking records retrieved from Oracle Database `USER_BOOKINGS` view</p>
-        <div id="my-bookings-list" class="results-container"></div>
+      <div class="card">
+        <h2>My Journey Reservations</h2>
+        <p class="subtitle">Fetched from Oracle <code>USER_BOOKINGS</code> View</p>
+        <div id="my-bookings-list" class="results-list"></div>
+      </div>
+    </section>
+
+    <!-- VIEW 6: ADMIN DASHBOARD -->
+    <section id="admin-layout" class="layout hidden">
+      <div class="admin-grid">
+        <div class="admin-stat-card">
+          <small>Total Trains</small>
+          <h3>3 Trains</h3>
+        </div>
+        <div class="admin-stat-card">
+          <small>Total Stations</small>
+          <h3>5 Stations</h3>
+        </div>
+        <div class="admin-stat-card">
+          <small>Active Schedules</small>
+          <h3>4 Schedules</h3>
+        </div>
+        <div class="admin-stat-card">
+          <small>Registered Users</small>
+          <h3>3 Users</h3>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 20px;">
+        <h2>Oracle Database Entities Management</h2>
+        <div class="admin-actions">
+          <button class="btn-secondary" onclick="alert('TRAIN table records loaded')">Manage Trains</button>
+          <button class="btn-secondary" onclick="alert('STATION table records loaded')">Manage Stations</button>
+          <button class="btn-secondary" onclick="alert('SCHEDULE table records loaded')">Manage Schedules</button>
+          <button class="btn-secondary" onclick="alert('CANCELLATION logs loaded')">View Cancellations</button>
+        </div>
       </div>
     </section>
 
