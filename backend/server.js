@@ -14,8 +14,13 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Root route
-app.get('/', (req, res) => {
+// Serve Frontend Static Files
+const path = require('path');
+const frontendPath = path.join(__dirname, '../frontend');
+app.use(express.static(frontendPath));
+
+// API Root route
+app.get('/api', (req, res) => {
   res.json({
     name: 'RailSafari Backend API',
     version: '1.0.0',
@@ -27,9 +32,12 @@ app.get('/', (req, res) => {
 // API Routes
 app.use('/api', apiRoutes);
 
-// 404 Not Found Handler
-app.use((req, res) => {
-  res.status(404).json({ error: 'Endpoint Not Found' });
+// Fallback to frontend index.html for web navigation
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api')) {
+    return res.status(404).json({ error: 'Endpoint Not Found' });
+  }
+  res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
 // Global Error Handler

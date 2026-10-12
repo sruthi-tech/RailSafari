@@ -1,61 +1,124 @@
+/* ==========================================================================
+   RailSafari - IRCTC Next Generation e-Ticketing System Theme
+   Inspired by https://www.irctc.co.in/nget/train-search
+   ========================================================================== */
+
 :root {
-  --primary-navy: #0f172a;
-  --secondary-navy: #1e293b;
-  --accent-orange: #ea580c;
-  --accent-orange-hover: #c2410c;
-  --emerald-green: #059669;
-  --emerald-light: #ecfdf5;
-  --bg-slate: #f8fafc;
-  --card-border: #e2e8f0;
-  --text-dark: #0f172a;
-  --text-muted: #64748b;
+  --irctc-blue: #213d77;
+  --irctc-blue-dark: #172b54;
+  --irctc-blue-light: #2c4e94;
+  --irctc-orange: #fb792b;
+  --irctc-orange-hover: #e36217;
+  --irctc-orange-light: #fff3eb;
+  --irctc-gold: #ffbe0b;
+  --irctc-green: #008000;
+  --irctc-green-light: #e8f5e9;
+  --irctc-red: #d32f2f;
+  --irctc-red-light: #ffebee;
+  --bg-page: #f4f6fa;
+  --bg-card: #ffffff;
+  --border-color: #d1d5db;
+  --border-light: #e5e7eb;
+  --text-dark: #1f2937;
+  --text-muted: #6b7280;
+  --text-light: #ffffff;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
 }
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 body {
-  background-color: var(--bg-slate);
+  background-color: var(--bg-page);
   color: var(--text-dark);
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .hidden {
   display: none !important;
 }
 
-/* Top Banner */
-.top-banner {
-  background-color: var(--secondary-navy);
-  color: #94a3b8;
+/* ==========================================================================
+   Top Header & Navigation Bar (IRCTC Signature Style)
+   ========================================================================== */
+
+.top-bar {
+  background-color: #ffffff;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 0.78rem;
+  color: var(--text-muted);
   padding: 6px 24px;
-  font-size: 0.8rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
-/* Navbar */
-.navbar {
-  background-color: var(--primary-navy);
-  color: #ffffff;
-  padding: 14px 24px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.nav-container {
-  max-width: 1200px;
+.top-bar-inner {
+  max-width: 1280px;
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.top-bar-left, .top-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.badge-db {
+  background: #e0e7ff;
+  color: var(--irctc-blue);
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.disha-badge {
+  background: linear-gradient(135deg, #fb792b, #ff5722);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.72rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+/* Main Navbar */
+.navbar {
+  background-color: var(--irctc-blue);
+  color: var(--text-light);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.nav-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 10px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
 }
 
 .brand {
@@ -63,343 +126,957 @@ body {
   align-items: center;
   gap: 12px;
   cursor: pointer;
+  text-decoration: none;
 }
 
-.brand-badge {
-  background-color: var(--emerald-green);
+.brand-emblem {
+  width: 44px;
+  height: 44px;
+  background: white;
+  color: var(--irctc-blue);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  border: 2px solid var(--irctc-orange);
+}
+
+.brand-text h1 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
   color: #ffffff;
-  font-weight: 800;
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 1.2rem;
+  line-height: 1.1;
 }
 
-.brand-title h1 {
-  font-size: 1.3rem;
-  font-weight: 800;
-  line-height: 1;
-}
-
-.brand-title small {
+.brand-text small {
   font-size: 0.72rem;
-  color: #94a3b8;
+  color: #cbd5e1;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .nav-links {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
 }
 
-.nav-btn {
+.nav-item {
   background: transparent;
-  color: #cbd5e1;
+  color: #ffffff;
   border: none;
-  padding: 8px 14px;
-  border-radius: 6px;
+  font-size: 0.85rem;
   font-weight: 600;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+.nav-item.active {
+  background-color: var(--irctc-orange);
+  color: #ffffff;
+}
+
+.user-session-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.user-name-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.btn-nav-logout {
+  background: transparent;
+  color: #ffcccc;
+  border: 1px solid rgba(255, 204, 204, 0.4);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s;
 }
 
-.nav-btn:hover, .nav-btn.active {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
+.btn-nav-logout:hover {
+  background: var(--irctc-red);
+  color: white;
+  border-color: var(--irctc-red);
 }
 
-.btn-accent {
-  background-color: var(--accent-orange) !important;
-  color: #ffffff !important;
-}
+/* ==========================================================================
+   Main Content Layout
+   ========================================================================== */
 
-/* Main Container */
-.main-container {
-  max-width: 1200px;
-  margin: 30px auto;
-  padding: 0 20px;
-}
-
-.card {
-  background-color: #ffffff;
-  border-radius: 12px;
-  padding: 28px;
-  border: 1px solid var(--card-border);
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03);
-}
-
-.max-w-600 {
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.subtitle {
-  color: var(--text-muted);
-  font-size: 0.88rem;
-  margin-bottom: 20px;
-}
-
-/* Search Hero */
-.search-hero {
-  background-color: #ffffff;
-  border-radius: 16px;
-  padding: 32px;
-  border: 1px solid var(--card-border);
-  box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
-  margin-bottom: 28px;
-}
-
-.search-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-  margin: 20px 0;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.form-group label {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--secondary-navy);
-  text-transform: uppercase;
-}
-
-.form-group input, .form-group select {
-  padding: 12px 14px;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  outline: none;
-}
-
-.form-group input:focus, .form-group select:focus {
-  border-color: var(--accent-orange);
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-.btn-accent-large {
+.main-content {
+  max-width: 1280px;
+  margin: 20px auto 40px auto;
+  padding: 0 16px;
+  flex: 1;
   width: 100%;
-  background-color: var(--accent-orange);
-  color: #ffffff;
-  padding: 14px;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.05rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background-color 0.2s;
 }
 
-.btn-accent-large:hover {
-  background-color: var(--accent-orange-hover);
+/* ==========================================================================
+   IRCTC Hero Search Card (Exact Next-Gen Layout)
+   ========================================================================== */
+
+.hero-search-wrapper {
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-light);
+  overflow: hidden;
+  margin-bottom: 24px;
 }
 
-.btn-primary {
-  width: 100%;
-  background-color: var(--primary-navy);
-  color: #ffffff;
-  padding: 12px 20px;
-  border: none;
-  border-radius: 8px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.btn-secondary {
-  background-color: #f1f5f9;
-  color: var(--secondary-navy);
-  padding: 10px 16px;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-/* Results Card */
-.results-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.train-card {
-  background-color: #ffffff;
-  border-radius: 12px;
-  padding: 24px;
-  border-left: 6px solid var(--emerald-green);
-  border-top: 1px solid var(--card-border);
-  border-right: 1px solid var(--card-border);
-  border-bottom: 1px solid var(--card-border);
+.search-header-tab {
+  background: linear-gradient(90deg, var(--irctc-blue) 0%, var(--irctc-blue-dark) 100%);
+  color: white;
+  padding: 14px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-/* Auth & DigiLocker Grid */
-.auth-grid {
-  display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 24px;
-}
-
-.auth-card {
-  background-color: #ffffff;
-  padding: 32px;
-  border-radius: 12px;
-  border: 1px solid var(--card-border);
-}
-
-.auth-tabs {
+.search-header-tab h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
   display: flex;
-  gap: 16px;
-  border-bottom: 2px solid #f1f5f9;
-  margin-bottom: 24px;
+  align-items: center;
+  gap: 8px;
 }
 
-.auth-tabs button {
-  background: none;
-  border: none;
-  padding: 10px;
+.search-card-body {
+  padding: 24px;
+}
+
+.search-grid-irctc {
+  display: grid;
+  grid-template-columns: 2fr auto 2fr 1.5fr 1.5fr 1.5fr;
+  gap: 14px;
+  align-items: flex-end;
+}
+
+@media (max-width: 1024px) {
+  .search-grid-irctc {
+    grid-template-columns: 1fr;
+  }
+}
+
+.station-input-group {
+  position: relative;
+}
+
+.station-input-group label,
+.form-group-irctc label {
+  display: block;
+  font-size: 0.78rem;
   font-weight: 700;
   color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-icon input,
+.form-group-irctc input,
+.form-group-irctc select {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-md);
+  color: var(--text-dark);
+  background: #ffffff;
+  transition: all 0.2s ease;
+}
+
+.input-with-icon input:focus,
+.form-group-irctc input:focus,
+.form-group-irctc select:focus {
+  outline: none;
+  border-color: var(--irctc-blue);
+  box-shadow: 0 0 0 3px rgba(33, 61, 119, 0.15);
+}
+
+.btn-swap-stations {
+  background: #ffffff;
+  border: 1.5px solid var(--border-color);
+  color: var(--irctc-blue);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-bottom: 4px;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-swap-stations:hover {
+  background: var(--irctc-orange-light);
+  border-color: var(--irctc-orange);
+  color: var(--irctc-orange);
+  transform: rotate(180deg);
+}
+
+/* Feature Checkboxes (IRCTC Style) */
+.search-checkboxes {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--border-light);
+}
+
+.irctc-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-dark);
   cursor: pointer;
 }
 
-.auth-tabs button.active {
-  color: var(--emerald-green);
-  border-bottom: 3px solid var(--emerald-green);
+.irctc-checkbox input {
+  accent-color: var(--irctc-blue);
+  width: 16px;
+  height: 16px;
 }
 
-.digilocker-card {
-  background-color: #eff6ff;
-  border: 1px solid #bfdbfe;
-  padding: 24px;
-  border-radius: 12px;
+/* Search Actions */
+.search-action-row {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
-.digi-badge {
-  background-color: #2563eb;
+.btn-irctc-search {
+  background: linear-gradient(135deg, var(--irctc-orange) 0%, #f35c16 100%);
   color: #ffffff;
-  font-size: 0.75rem;
+  border: none;
+  padding: 13px 36px;
+  font-size: 1rem;
   font-weight: 800;
-  padding: 4px 8px;
-  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(251, 121, 43, 0.35);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.digi-status-box {
-  background-color: #ffffff;
-  padding: 12px;
-  border-radius: 8px;
-  margin: 16px 0;
+.btn-irctc-search:hover {
+  background: linear-gradient(135deg, #e36217 0%, #d84b07 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(251, 121, 43, 0.45);
+}
+
+.btn-disha-search {
+  background: #ffffff;
+  border: 1.5px solid var(--irctc-orange);
+  color: var(--irctc-orange);
+  font-weight: 700;
+  font-size: 0.88rem;
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.btn-disha-search:hover {
+  background: var(--irctc-orange-light);
+}
+
+/* ==========================================================================
+   Train Search Results Layout
+   ========================================================================== */
+
+.results-header-bar {
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 14px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-sm);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.results-count-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--irctc-blue);
+}
+
+.filter-sort-controls {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.status-indicator.verified {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background-color: var(--emerald-green);
-}
-
-/* Booking & Class Grid */
-.booking-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-}
-
-.class-options {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 10px;
-  margin: 10px 0 20px 0;
-}
-
-.class-btn {
-  padding: 10px;
-  border: 1px solid #cbd5e1;
-  background-color: #ffffff;
-  border-radius: 8px;
+.filter-sort-controls select {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: white;
   font-weight: 600;
-  cursor: pointer;
-  font-size: 0.82rem;
 }
 
-.class-btn.active {
-  background-color: var(--emerald-green);
-  color: #ffffff;
-  border-color: var(--emerald-green);
+/* Train Card (IRCTC Layout) */
+.irctc-train-card {
+  background: #ffffff;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 18px;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease;
 }
 
-.grid-seats {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 8px;
-  margin-top: 10px;
+.irctc-train-card:hover {
+  box-shadow: var(--shadow-md);
 }
 
-.seat-btn {
-  padding: 10px;
-  background-color: #f1f5f9;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  text-align: center;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.seat-btn.selected {
-  background-color: var(--accent-orange);
-  color: #ffffff;
-}
-
-.fare-summary {
+.train-card-header {
+  background: #f8fafc;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border-light);
   display: flex;
   justify-content: space-between;
-  margin: 20px 0;
-  padding: 12px;
-  background-color: #f8fafc;
-  border-radius: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
-/* Modals & Tickets */
+.train-title-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.train-name-badge {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--irctc-blue);
+}
+
+.runs-on-badge {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.runs-on-badge span.run-day {
+  color: var(--irctc-green);
+  font-weight: 700;
+  margin: 0 1px;
+}
+
+/* Journey Timeline */
+.journey-timeline-row {
+  padding: 18px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  border-bottom: 1px dashed var(--border-light);
+}
+
+.station-time-block {
+  min-width: 160px;
+}
+
+.station-time-block.dest {
+  text-align: right;
+}
+
+.time-val {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--text-dark);
+}
+
+.station-name-val {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--irctc-blue);
+  margin-top: 2px;
+}
+
+.station-date-val {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.duration-indicator-block {
+  flex: 1;
+  text-align: center;
+  position: relative;
+  max-width: 320px;
+}
+
+.duration-text {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.duration-line {
+  height: 2px;
+  background: #cbd5e1;
+  position: relative;
+  margin: 6px 0;
+}
+
+.duration-line::after {
+  content: '▶';
+  position: absolute;
+  right: -4px;
+  top: -7px;
+  color: var(--irctc-blue);
+  font-size: 0.8rem;
+}
+
+/* Horizontal Class Cards (Signature IRCTC Feature) */
+.class-cards-container {
+  padding: 16px 20px;
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  background: #ffffff;
+}
+
+.irctc-class-card {
+  min-width: 140px;
+  background: #ffffff;
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  flex: 1;
+}
+
+.irctc-class-card:hover {
+  border-color: var(--irctc-blue);
+  background: #f8fafc;
+}
+
+.irctc-class-card.selected {
+  border-color: var(--irctc-orange);
+  background: var(--irctc-orange-light);
+  box-shadow: 0 0 0 2px var(--irctc-orange);
+}
+
+.class-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.class-code {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-dark);
+}
+
+.class-fare {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--irctc-blue);
+}
+
+.availability-tag {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--irctc-green);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.availability-tag.waitlist {
+  color: var(--irctc-orange);
+}
+
+.availability-tag.regret {
+  color: var(--irctc-red);
+}
+
+/* Train Card Bottom Bar */
+.train-card-footer {
+  padding: 10px 20px;
+  background: #fafaf9;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.btn-book-irctc {
+  background: var(--irctc-orange);
+  color: white;
+  border: none;
+  padding: 8px 24px;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.2s;
+}
+
+.btn-book-irctc:hover {
+  background: var(--irctc-orange-hover);
+}
+
+/* ==========================================================================
+   Interactive Coach & Seat Map (Live Oracle DB)
+   ========================================================================== */
+
+.booking-view-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 900px) {
+  .booking-view-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.coach-map-card, .passenger-details-card {
+  background: #ffffff;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.coach-header-info {
+  background: #f1f5f9;
+  border-left: 4px solid var(--irctc-blue);
+  padding: 12px 16px;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin-bottom: 20px;
+}
+
+.seat-legend {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--border-light);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.legend-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+}
+
+.legend-dot.available { background: var(--irctc-green); }
+.legend-dot.booked { background: #94a3b8; }
+.legend-dot.selected { background: var(--irctc-orange); }
+
+.coach-seats-container {
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  background: #f8fafc;
+}
+
+.seats-grid-layout {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr) 20px repeat(2, 1fr);
+  gap: 10px;
+  align-items: center;
+}
+
+.seat-aisle-divider {
+  width: 2px;
+  background: #cbd5e1;
+  height: 100%;
+}
+
+.seat-cell {
+  background: #ffffff;
+  border: 1.5px solid #22c55e;
+  color: #15803d;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 10px 4px;
+  text-align: center;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.seat-cell:hover:not(.booked) {
+  background: #dcfce7;
+  transform: scale(1.05);
+}
+
+.seat-cell.booked {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+  color: #64748b;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.seat-cell.selected {
+  background: var(--irctc-orange) !important;
+  border-color: var(--irctc-orange) !important;
+  color: #ffffff !important;
+  transform: scale(1.05);
+  box-shadow: 0 2px 6px rgba(251, 121, 43, 0.4);
+}
+
+.seat-type-sub {
+  font-size: 0.62rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Passenger Form */
+.passenger-card-item {
+  background: #f8fafc;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+.fare-breakdown-box {
+  background: #f8fafc;
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-top: 20px;
+  border: 1px dashed var(--border-color);
+}
+
+.fare-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.88rem;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+}
+
+.fare-row.total {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--irctc-blue);
+  border-top: 1.5px solid var(--border-color);
+  padding-top: 8px;
+  margin-top: 8px;
+}
+
+/* ==========================================================================
+   IRCTC Electronic Reservation Slip (Printable E-Ticket)
+   ========================================================================== */
+
+.ers-ticket-wrapper {
+  background: #ffffff;
+  border: 2px solid var(--irctc-blue);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.ers-header {
+  border-bottom: 2px solid var(--irctc-blue);
+  padding-bottom: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ers-railway-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ers-railway-logo h2 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--irctc-blue);
+}
+
+.ers-pnr-banner {
+  background: #fef2f2;
+  border: 1.5px solid #fecaca;
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
+  text-align: right;
+}
+
+.ers-pnr-banner strong {
+  font-size: 1.25rem;
+  color: var(--irctc-red);
+  letter-spacing: 1px;
+}
+
+.ers-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+  font-size: 0.85rem;
+}
+
+.ers-table th, .ers-table td {
+  border: 1px solid var(--border-light);
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.ers-table th {
+  background: #f1f5f9;
+  font-weight: 700;
+  color: var(--irctc-blue);
+}
+
+.ers-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .ers-ticket-wrapper, .ers-ticket-wrapper * {
+    visibility: visible;
+  }
+  .ers-ticket-wrapper {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    border: none;
+    box-shadow: none;
+  }
+  .ers-actions {
+    display: none !important;
+  }
+}
+
+/* ==========================================================================
+   Admin DBMS Control Center
+   ========================================================================== */
+
+.admin-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.admin-metric-card {
+  background: #ffffff;
+  border-radius: var(--radius-md);
+  padding: 18px;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+  border-left: 4px solid var(--irctc-blue);
+}
+
+.admin-metric-card small {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.admin-metric-card h3 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--irctc-blue);
+  margin-top: 4px;
+}
+
+.admin-tabs-nav {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  border-bottom: 2px solid var(--border-light);
+}
+
+.admin-tab-btn {
+  background: transparent;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  padding: 10px 16px;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+}
+
+.admin-tab-btn.active {
+  color: var(--irctc-blue);
+  border-bottom-color: var(--irctc-orange);
+}
+
+.admin-table-wrapper {
+  overflow-x: auto;
+  background: #ffffff;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.admin-table th, .admin-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-light);
+  text-align: left;
+}
+
+.admin-table th {
+  background: #f8fafc;
+  color: var(--irctc-blue);
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   Modals & Toast Notifications
+   ========================================================================== */
+
 .modal-overlay {
   position: fixed;
-  top: 0; left: 0; width: 100vw; height: 100vh;
-  background-color: rgba(15, 23, 42, 0.7);
-  display: flex; justify-content: center; align-items: center;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   z-index: 1000;
+  padding: 16px;
 }
 
 .modal-card {
-  background: #ffffff; padding: 32px; border-radius: 16px; width: 90%; max-width: 480px;
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  max-width: 520px;
+  width: 100%;
+  padding: 24px;
+  box-shadow: var(--shadow-lg);
+  animation: modalIn 0.2s ease-out;
 }
 
-.pay-tabs { display: flex; gap: 8px; margin: 16px 0; }
-.pay-tab { flex: 1; padding: 8px; border: 1px solid #cbd5e1; background: #f8fafc; border-radius: 6px; cursor: pointer; }
-.pay-tab.active { background: var(--primary-navy); color: #fff; }
-
-.modal-actions { display: flex; gap: 12px; margin-top: 20px; }
-
-.ticket-card {
-  background-color: #ffffff; border: 2px dashed var(--emerald-green); padding: 32px; border-radius: 16px;
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }
 
-.ticket-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.ticket-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.status-badge.confirmed { background-color: var(--emerald-green); color: #fff; padding: 6px 12px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; }
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 
-/* Admin Grid */
-.admin-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-.admin-stat-card { background: #ffffff; padding: 20px; border-radius: 12px; border: 1px solid var(--card-border); }
-.admin-actions { display: flex; gap: 12px; margin-top: 16px; }
+.toast-msg {
+  background: #ffffff;
+  color: var(--text-dark);
+  border-left: 5px solid var(--irctc-blue);
+  padding: 14px 20px;
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  font-size: 0.88rem;
+  font-weight: 600;
+  min-width: 280px;
+  animation: slideInRight 0.3s ease;
+}
+
+.toast-msg.success { border-left-color: var(--irctc-green); }
+.toast-msg.error { border-left-color: var(--irctc-red); }
+.toast-msg.warning { border-left-color: var(--irctc-orange); }
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}

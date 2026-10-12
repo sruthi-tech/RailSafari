@@ -52,6 +52,8 @@ async function bookTicket(req, res) {
     return res.status(201).json({
       success: true,
       message: 'Ticket booked successfully.',
+      pnr: booking.pnr,
+      bookingId: booking.bookingId,
       data: booking
     });
   } catch (error) {
@@ -83,6 +85,7 @@ async function getUserBookings(req, res) {
     return res.status(200).json({
       success: true,
       count: bookings.length,
+      bookings: bookings,
       data: bookings
     });
   } catch (error) {

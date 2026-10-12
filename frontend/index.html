@@ -3,328 +3,510 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RailSafari | Database-Driven Train Reservation System</title>
+  <title>IRCTC Next Generation e-Ticketing System | RailSafari</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
-  <!-- Top Announcement Bar -->
-  <div class="top-banner">
-    <span>🔒 DBMS Academic Project | Connected to Oracle Database (FREEPDB1 / localhost:1521)</span>
-    <span id="live-time">Loading clock...</span>
-  </div>
-
-  <!-- Header Navigation -->
-  <header class="navbar">
-    <div class="nav-container">
-      <div class="brand" onclick="showLayout('dashboard-layout')">
-        <div class="brand-badge">RS</div>
-        <div class="brand-title">
-          <h1>RailSafari</h1>
-          <small>Journey Management System</small>
+  <!-- Top Announcement & Utility Bar (IRCTC Style) -->
+  <div class="top-bar">
+    <div class="top-bar-inner">
+      <div class="top-bar-left">
+        <span class="badge-db">🔒 ORACLE 23ai (FREEPDB1)</span>
+        <span id="live-clock">Loading live time...</span>
+        <span class="disha-badge" onclick="showDishaHelp()">🤖 Ask Disha 2.0 (AI)</span>
+      </div>
+      <div class="top-bar-right">
+        <span>Helpdesk: 139</span>
+        <div id="user-nav-status" class="user-session-box">
+          <span id="nav-user-name" class="user-name-label">Guest User</span>
+          <button id="nav-auth-btn" class="btn-nav-logout" onclick="handleNavAuthClick()">Sign In</button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Main Navbar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="brand" onclick="showLayout('search-layout')">
+        <div class="brand-emblem">IR</div>
+        <div class="brand-text">
+          <h1>RailSafari</h1>
+          <small>IRCTC Next-Gen Reservation Portal</small>
+        </div>
+      </div>
+
       <nav class="nav-links">
-        <button class="nav-btn active" onclick="showLayout('dashboard-layout', this)">🚆 Book Ticket</button>
-        <button class="nav-btn" onclick="showLayout('pnr-layout', this)">🔍 PNR Status</button>
-        <button class="nav-btn" onclick="showLayout('portal-layout', this)">🎫 My Bookings</button>
-        <button class="nav-btn" onclick="showLayout('admin-layout', this)">👨‍💼 Admin</button>
-        <button class="nav-btn btn-accent" onclick="showLayout('auth-layout', this)">Account / Login</button>
+        <button id="nav-tab-search" class="nav-item active" onclick="showLayout('search-layout', this)">🚆 Book Ticket</button>
+        <button id="nav-tab-pnr" class="nav-item" onclick="showLayout('pnr-layout', this)">🔍 PNR Status</button>
+        <button id="nav-tab-bookings" class="nav-item" onclick="showLayout('portal-layout', this)">🎫 My Bookings</button>
+        <button id="nav-tab-admin" class="nav-item" onclick="showLayout('admin-layout', this)">📊 Admin DBMS</button>
+        <button id="nav-tab-auth" class="nav-item" onclick="showLayout('auth-layout', this)">👤 Account</button>
       </nav>
     </div>
   </header>
 
-  <main class="main-container">
+  <main class="main-content">
 
-    <!-- VIEW 1: AUTHENTICATION & DIGILOCKER VERIFICATION -->
-    <section id="auth-layout" class="layout hidden">
-      <div class="auth-grid">
-        <div class="auth-card">
-          <div class="auth-tabs">
-            <button id="tab-login" class="active" onclick="toggleAuthTab('login')">Sign In</button>
-            <button id="tab-signup" onclick="toggleAuthTab('signup')">Register User</button>
-          </div>
-
-          <form id="login-form" onsubmit="handleLogin(event)">
-            <h2>Welcome Back</h2>
-            <p class="subtitle">Access your RailSafari user account</p>
-            <div class="form-group">
-              <label>Email Address</label>
-              <input type="email" id="login-email" required placeholder="arjun@gmail.com">
-            </div>
-            <div class="form-group">
-              <label>Password</label>
-              <input type="password" id="login-password" required placeholder="••••••••">
-            </div>
-            <button type="submit" class="btn-primary">Sign In to Dashboard</button>
-          </form>
-
-          <form id="signup-form" class="hidden" onsubmit="handleSignup(event)">
-            <h2>Create Account</h2>
-            <p class="subtitle">Inserts record into Oracle <code>USERS</code> table using <code>USER_SEQ</code></p>
-            <div class="form-group">
-              <label>Full Name</label>
-              <input type="text" id="signup-name" required placeholder="Arjun Menon">
-            </div>
-            <div class="form-group">
-              <label>Phone Number</label>
-              <input type="tel" id="signup-phone" required placeholder="9876543210">
-            </div>
-            <div class="form-group">
-              <label>Email Address</label>
-              <input type="email" id="signup-email" required placeholder="arjun@gmail.com">
-            </div>
-            <div class="form-group">
-              <label>IRCTC Number (Optional)</label>
-              <input type="text" id="signup-irctc" placeholder="IRCTC_ARJUN">
-            </div>
-            <div class="form-group">
-              <label>Password</label>
-              <input type="password" id="signup-password" required placeholder="••••••••">
-            </div>
-            <button type="submit" class="btn-primary">Register Account</button>
-          </form>
+    <!-- VIEW 1: HERO TRAIN SEARCH (IRCTC ICONIC SEARCH PANEL) -->
+    <section id="search-layout" class="layout">
+      <div class="hero-search-wrapper">
+        <div class="search-header-tab">
+          <h2>🚆 BOOK TICKET</h2>
+          <small style="color: #cbd5e1;">Live Oracle Views: AVAILABLE_TRAINS & TRAIN_SEAT_AVAILABILITY</small>
         </div>
 
-        <!-- Simulated DigiLocker Widget -->
-        <div class="digilocker-card">
-          <div class="digi-header">
-            <span class="digi-badge">DigiLocker</span>
-            <h3>Identity Verification</h3>
-          </div>
-          <p>Links identity for verified booking status and concessions in Oracle DB.</p>
-          <div class="digi-status-box">
-            <div class="status-indicator verified"></div>
-            <div>
-              <strong>VERIFICATION_STATUS: VERIFIED</strong>
-              <small>Token: DL-VERIFIED-2026-X88</small>
-            </div>
-          </div>
-          <button class="btn-secondary" onclick="alert('DigiLocker Identity re-verified successfully!')">Verify Identity</button>
-        </div>
-      </div>
-    </section>
+        <div class="search-card-body">
+          <form id="train-search-form" onsubmit="handleSearchTrains(event)">
+            <datalist id="stations-list"></datalist>
 
-    <!-- VIEW 2: DASHBOARD & TRAIN SEARCH -->
-    <section id="dashboard-layout" class="layout">
-      <div class="search-hero">
-        <div class="hero-header">
-          <h2>Search Trains & Check Availability</h2>
-          <p>Integrated with Oracle Views: <code>AVAILABLE_TRAINS</code> & <code>TRAIN_SEAT_AVAILABILITY</code></p>
-        </div>
-
-        <form id="search-form" onsubmit="handleSearchTrains(event)">
-          <div class="search-grid">
-            <div class="form-group">
-              <label>From Station</label>
-              <input type="text" id="search-from" required placeholder="ERS or ERNAKULAM JUNCTION">
-            </div>
-            <div class="form-group">
-              <label>To Station</label>
-              <input type="text" id="search-to" required placeholder="TVC or THIRUVANANTHAPURAM CENTRAL">
-            </div>
-            <div class="form-group">
-              <label>Journey Date</label>
-              <input type="date" id="search-date" required value="2026-09-24">
-            </div>
-            <div class="form-group">
-              <label>Quota</label>
-              <select id="search-quota">
-                <option value="GENERAL">GENERAL</option>
-                <option value="TATKAL">TATKAL</option>
-                <option value="LADIES">LADIES</option>
-                <option value="PREMIUM_TATKAL">PREMIUM TATKAL</option>
-              </select>
-            </div>
-          </div>
-          <button type="submit" class="btn-accent-large">Search Available Trains ➔</button>
-        </form>
-      </div>
-
-      <div id="train-results" class="results-list"></div>
-    </section>
-
-    <!-- VIEW 3: SEAT & CLASS SELECTION + PASSENGER FORM -->
-    <section id="booking-layout" class="layout hidden">
-      <div class="booking-grid">
-        <div class="card">
-          <h2>Seat & Class Selection</h2>
-          <div id="selected-train-info" class="info-banner"></div>
-
-          <div class="class-picker">
-            <label>Select Travel Class (Computed via <code>CALCULATE_FARE</code>)</label>
-            <div class="class-options">
-              <button class="class-btn" onclick="selectClass(this, '1A', 4.00)">1A - Executive AC</button>
-              <button class="class-btn" onclick="selectClass(this, '2A', 3.00)">2A - 2 Tier AC</button>
-              <button class="class-btn active" onclick="selectClass(this, '3A', 2.00)">3A - 3 Tier AC</button>
-              <button class="class-btn" onclick="selectClass(this, 'SL', 1.00)">SL - Sleeper</button>
-              <button class="class-btn" onclick="selectClass(this, 'CC', 1.50)">CC - Chair Car</button>
-              <button class="class-btn" onclick="selectClass(this, '2S', 0.60)">2S - Second Seating</button>
-            </div>
-          </div>
-
-          <div class="seat-picker">
-            <label>Select Available Seat (Updates <code>SEAT_STATUS</code> in Oracle)</label>
-            <div id="seat-grid" class="grid-seats"></div>
-            <input type="hidden" id="selected-seat-no" required>
-          </div>
-        </div>
-
-        <div class="card">
-          <h2>Passenger Information</h2>
-          <p class="subtitle">Maps directly to Oracle <code>PASSENGER</code> table</p>
-
-          <form id="booking-form" onsubmit="openPaymentModal(event)">
-            <div class="form-group">
-              <label>Passenger Full Name</label>
-              <input type="text" id="pass-name" required placeholder="Passenger Full Name">
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>Age (1 - 120)</label>
-                <input type="number" id="pass-age" required min="1" max="120" value="28">
+            <div class="search-grid-irctc">
+              <!-- From Station -->
+              <div class="station-input-group">
+                <label>From</label>
+                <div class="input-with-icon">
+                  <input type="text" id="search-from" list="stations-list" required placeholder="ERS - ERNAKULAM JN" value="ERS">
+                </div>
               </div>
-              <div class="form-group">
-                <label>Gender</label>
-                <select id="pass-gender">
-                  <option value="MALE">MALE</option>
-                  <option value="FEMALE">FEMALE</option>
-                  <option value="OTHER">OTHER</option>
+
+              <!-- Swap Button -->
+              <div>
+                <button type="button" class="btn-swap-stations" onclick="swapStations()" title="Swap origin and destination">⇄</button>
+              </div>
+
+              <!-- To Station -->
+              <div class="station-input-group">
+                <label>To</label>
+                <div class="input-with-icon">
+                  <input type="text" id="search-to" list="stations-list" required placeholder="TVC - TRIVANDRUM CNTL" value="TVC">
+                </div>
+              </div>
+
+              <!-- Date Picker -->
+              <div class="form-group-irctc">
+                <label>Date</label>
+                <input type="date" id="search-date" required value="2026-09-24">
+              </div>
+
+              <!-- Class Picker -->
+              <div class="form-group-irctc">
+                <label>Class</label>
+                <select id="search-class">
+                  <option value="ALL">All Classes</option>
+                  <option value="1A">AC First Class (1A)</option>
+                  <option value="2A">AC 2 Tier (2A)</option>
+                  <option value="3A" selected>AC 3 Tier (3A)</option>
+                  <option value="SL">Sleeper (SL)</option>
+                  <option value="CC">AC Chair Car (CC)</option>
+                  <option value="2S">Second Sitting (2S)</option>
+                </select>
+              </div>
+
+              <!-- Quota Picker -->
+              <div class="form-group-irctc">
+                <label>Quota</label>
+                <select id="search-quota">
+                  <option value="GENERAL" selected>GENERAL</option>
+                  <option value="TATKAL">TATKAL</option>
+                  <option value="LADIES">LADIES</option>
+                  <option value="SENIOR_CITIZEN">LOWER BERTH / SR. CITIZEN</option>
+                  <option value="PREMIUM_TATKAL">PREMIUM TATKAL</option>
                 </select>
               </div>
             </div>
-            <div class="fare-summary">
-              <span>Total Fare Amount:</span>
-              <strong id="display-fare">₹420.00</strong>
+
+            <!-- IRCTC Feature Checkboxes -->
+            <div class="search-checkboxes">
+              <label class="irctc-checkbox"><input type="checkbox"> Person With Disability Concession</label>
+              <label class="irctc-checkbox"><input type="checkbox" checked> Flexible With Date</label>
+              <label class="irctc-checkbox"><input type="checkbox" checked> Train with Available Berth</label>
+              <label class="irctc-checkbox"><input type="checkbox"> Railway Pass Concession</label>
             </div>
-            <button type="submit" class="btn-primary">Proceed to Payment Gateway ➔</button>
+
+            <!-- Submit CTA -->
+            <div class="search-action-row">
+              <button type="submit" class="btn-irctc-search">Search Trains ➔</button>
+              <button type="button" class="btn-disha-search" onclick="autoFillPopularRoute('ERS', 'TVC')">⚡ Quick: ERS ➔ TVC</button>
+              <button type="button" class="btn-disha-search" onclick="autoFillPopularRoute('ERS', 'MAQ')">⚡ Quick: ERS ➔ MAQ</button>
+            </div>
           </form>
         </div>
       </div>
-    </section>
 
-    <!-- PAYMENT GATEWAY MODAL -->
-    <div id="payment-modal" class="modal-overlay hidden">
-      <div class="modal-card">
-        <div class="modal-header">
-          <h3>RailSafari Payment Gateway</h3>
-          <span class="secure-tag">🔒 Inserts row into PAYMENT table</span>
-        </div>
-        <p style="margin-top: 10px;">Amount: <strong id="modal-fare" style="color: #059669; font-size: 1.2rem;">₹420.00</strong></p>
-
-        <div class="pay-tabs">
-          <button type="button" class="pay-tab active" onclick="switchPayTab('upi')">UPI</button>
-          <button type="button" class="pay-tab" onclick="switchPayTab('card')">Card</button>
-          <button type="button" class="pay-tab" onclick="switchPayTab('net')">Net Banking</button>
-        </div>
-
-        <div id="pay-upi-view" class="pay-method-view">
-          <div class="form-group">
-            <label>UPI VPA</label>
-            <input type="text" value="user@okicici">
-          </div>
-        </div>
-
-        <div id="pay-card-view" class="pay-method-view hidden">
-          <div class="form-group">
-            <label>Card Number</label>
-            <input type="text" placeholder="4532 •••• •••• 8892">
-          </div>
-        </div>
-
-        <div id="pay-net-view" class="pay-method-view hidden">
-          <div class="form-group">
-            <label>Select Bank</label>
-            <select>
-              <option>State Bank of India</option>
-              <option>HDFC Bank</option>
-              <option>ICICI Bank</option>
+      <!-- Search Results Area -->
+      <div id="results-section" class="hidden">
+        <div class="results-header-bar">
+          <div id="results-count-title" class="results-count-title">Loading available trains...</div>
+          <div class="filter-sort-controls">
+            <label style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">SORT BY:</label>
+            <select id="sort-results-by" onchange="sortCurrentResults(this.value)">
+              <option value="departure">Departure Time (Earliest)</option>
+              <option value="duration">Travel Duration (Fastest)</option>
+              <option value="name">Train Name (A - Z)</option>
             </select>
           </div>
         </div>
 
-        <div class="modal-actions">
-          <button type="button" class="btn-secondary" onclick="cancelPayment()">Cancel</button>
-          <button type="button" id="pay-btn" class="btn-primary" onclick="processPayment(event)">Pay & Execute BOOK_TICKET Procedure</button>
+        <div id="train-results-container"></div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: INTERACTIVE COACH & SEAT MAP + PASSENGER FORM -->
+    <section id="booking-layout" class="layout hidden">
+      <div class="booking-view-grid">
+        <!-- Left Column: Coach & Seat Grid -->
+        <div class="coach-map-card">
+          <div class="coach-header-info">
+            <h3 id="selected-train-heading" style="color:var(--irctc-blue); font-size:1.15rem; font-weight:800;">Selected Train</h3>
+            <p id="selected-train-sub" style="font-size:0.85rem; color:var(--text-muted); margin-top:2px;">Route & Date info</p>
+          </div>
+
+          <!-- Class Selection Tabs -->
+          <div style="margin-bottom:16px;">
+            <label style="display:block; font-size:0.8rem; font-weight:700; color:var(--text-muted); margin-bottom:8px; text-transform:uppercase;">Select Travel Class</label>
+            <div id="booking-class-tabs" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+          </div>
+
+          <!-- Coach Berth Map -->
+          <div>
+            <div class="seat-legend">
+              <div class="legend-item"><span class="legend-dot available"></span> Available</div>
+              <div class="legend-item"><span class="legend-dot booked"></span> Booked / Occupied</div>
+              <div class="legend-item"><span class="legend-dot selected"></span> Selected Berth</div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <small id="coach-label-indicator" style="font-weight:700; color:var(--irctc-blue);">Coach A1 (3A)</small>
+              <small style="color:var(--text-muted);">Click any green berth to allocate</small>
+            </div>
+
+            <div class="coach-seats-container">
+              <div id="coach-seats-grid" class="seats-grid-layout"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Passenger Info & Fare Summary -->
+        <div class="passenger-details-card">
+          <h3 style="color:var(--irctc-blue); font-size:1.15rem; font-weight:800; margin-bottom:4px;">Passenger Information</h3>
+          <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:16px;">Directly stored into Oracle <code>PASSENGER</code> table</p>
+
+          <form id="passenger-booking-form" onsubmit="openPaymentModal(event)">
+            <input type="hidden" id="selected-seat-id" required>
+
+            <div class="passenger-card-item">
+              <div style="margin-bottom:10px;">
+                <label style="display:block; font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Passenger 1 Name</label>
+                <input type="text" id="pax-name-1" required placeholder="Full Name as on Aadhaar / Voter ID" style="width:100%; padding:10px; border:1px solid var(--border-color); border-radius:6px; font-weight:600;">
+              </div>
+
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+                <div>
+                  <label style="display:block; font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Age</label>
+                  <input type="number" id="pax-age-1" min="1" max="120" value="28" required style="width:100%; padding:10px; border:1px solid var(--border-color); border-radius:6px; font-weight:600;">
+                </div>
+                <div>
+                  <label style="display:block; font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Gender</label>
+                  <select id="pax-gender-1" style="width:100%; padding:10px; border:1px solid var(--border-color); border-radius:6px; font-weight:600;">
+                    <option value="MALE">Male</option>
+                    <option value="FEMALE">Female</option>
+                    <option value="OTHER">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label style="display:block; font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Berth Preference</label>
+                <select id="pax-berth-pref" style="width:100%; padding:10px; border:1px solid var(--border-color); border-radius:6px; font-weight:600;">
+                  <option value="NO_PREF">No Preference</option>
+                  <option value="LOWER">Lower Berth</option>
+                  <option value="MIDDLE">Middle Berth</option>
+                  <option value="UPPER">Upper Berth</option>
+                  <option value="SIDE_LOWER">Side Lower</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Dynamic Fare Breakdown -->
+            <div class="fare-breakdown-box">
+              <div class="fare-row">
+                <span>Base Ticket Fare:</span>
+                <span id="fare-base">₹420.00</span>
+              </div>
+              <div class="fare-row">
+                <span>Reservation & Superfast Fee:</span>
+                <span>₹40.00</span>
+              </div>
+              <div class="fare-row">
+                <span>GST (5%):</span>
+                <span>₹21.00</span>
+              </div>
+              <div class="fare-row total">
+                <span>Total Payable Amount:</span>
+                <span id="fare-total">₹481.00</span>
+              </div>
+            </div>
+
+            <div style="margin-top:20px; display:flex; gap:10px;">
+              <button type="button" class="btn-disha-search" onclick="showLayout('search-layout')" style="flex:1;">Cancel</button>
+              <button type="submit" class="btn-book-irctc" style="flex:2; padding:12px 18px; font-size:0.95rem;">Continue to Payment ➔</button>
+            </div>
+          </form>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- DIGITAL E-TICKET CONFIRMATION -->
-    <div id="ticket-container" class="ticket-card hidden">
-      <div class="ticket-header">
-        <div>
-          <h2>E-TICKET CONFIRMATION</h2>
-          <small>Generated via Oracle PL/SQL <code>BOOK_TICKET</code> procedure</small>
+    <!-- VIEW 3: PRINTABLE OFFICIAL ELECTRONIC RESERVATION SLIP (ERS) -->
+    <section id="ticket-layout" class="layout hidden">
+      <div class="ers-ticket-wrapper">
+        <div class="ers-header">
+          <div class="ers-railway-logo">
+            <div class="brand-emblem" style="width:50px; height:50px; font-size:1.25rem;">IR</div>
+            <div>
+              <h2>INDIAN RAILWAYS / IRCTC</h2>
+              <small style="color:var(--text-muted); font-weight:600;">Electronic Reservation Slip (ERS) - Valid with Original ID Proof</small>
+            </div>
+          </div>
+          <div class="ers-pnr-banner">
+            <small style="color:var(--text-muted); display:block;">PNR NUMBER</small>
+            <strong id="ers-pnr-val">PNR100001</strong>
+          </div>
         </div>
-        <span class="status-badge confirmed">CONFIRMED</span>
-      </div>
-      <div class="ticket-grid">
-        <div><strong>PNR Number:</strong> <span id="t-pnr" class="highlight"></span></div>
-        <div><strong>Passenger:</strong> <span id="t-name"></span> (<span id="t-age"></span> Y, <span id="t-gender"></span>)</div>
-        <div><strong>Train:</strong> <span id="t-train"></span></div>
-        <div><strong>Seat & Coach:</strong> <span id="t-seat"></span></div>
-      </div>
-      <button class="btn-primary" onclick="showLayout('dashboard-layout')" style="margin-top: 20px;">Book Another Ticket</button>
-    </div>
 
-    <!-- VIEW 4: PNR STATUS LOOKUP -->
+        <table class="ers-table">
+          <tr>
+            <th>Train Number & Name</th>
+            <td id="ers-train-val">12625 / KERALA EXPRESS</td>
+            <th>Date of Journey</th>
+            <td id="ers-date-val">2026-09-24</td>
+          </tr>
+          <tr>
+            <th>From Station</th>
+            <td id="ers-from-val">ERNAKULAM JN (ERS)</td>
+            <th>To Station</th>
+            <td id="ers-to-val">TRIVANDRUM CNTL (TVC)</td>
+          </tr>
+          <tr>
+            <th>Class</th>
+            <td id="ers-class-val">3A (AC 3 Tier)</td>
+            <th>Quota</th>
+            <td id="ers-quota-val">GENERAL</td>
+          </tr>
+          <tr>
+            <th>Booking Status</th>
+            <td><strong style="color:var(--irctc-green);" id="ers-status-val">CONFIRMED</strong></td>
+            <th>Total Fare Paid</th>
+            <td id="ers-fare-val">₹481.00 (Incl. Taxes)</td>
+          </tr>
+        </table>
+
+        <!-- Passenger Table -->
+        <h4 style="margin-top:20px; color:var(--irctc-blue); font-size:0.95rem;">Passenger Details</h4>
+        <table class="ers-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Passenger Name</th>
+              <th>Age</th>
+              <th>Gender</th>
+              <th>Booking Status</th>
+              <th>Coach & Seat</th>
+            </tr>
+          </thead>
+          <tbody id="ers-pax-rows">
+            <tr>
+              <td>1</td>
+              <td id="ers-pax-name">ARJUN MENON</td>
+              <td id="ers-pax-age">24</td>
+              <td id="ers-pax-gender">MALE</td>
+              <td><span style="color:var(--irctc-green); font-weight:700;">CNF (CONFIRMED)</span></td>
+              <td id="ers-pax-seat">Coach A1, Seat 3 (LOWER)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="ers-actions">
+          <button class="btn-irctc-search" onclick="window.print()" style="padding:10px 24px; font-size:0.9rem;">🖨️ Print E-Ticket / Save PDF</button>
+          <button class="btn-disha-search" onclick="showLayout('search-layout')">Book Another Ticket</button>
+          <button class="btn-disha-search" onclick="showLayout('portal-layout')">View All My Bookings</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 4: PNR STATUS ENQUIRY (IRCTC SIGNATURE LOOK) -->
     <section id="pnr-layout" class="layout hidden">
-      <div class="card max-w-600">
-        <h2>PNR Status Lookup</h2>
-        <p class="subtitle">Queries Oracle <code>BOOKING</code> table by <code>PNR</code></p>
-        <div class="form-group">
-          <label>Enter 10-Digit / Sequence PNR</label>
-          <input type="text" id="pnr-input" placeholder="e.g. PNR000001">
+      <div style="max-width:680px; margin:0 auto; background:white; border-radius:var(--radius-lg); padding:28px; border:1px solid var(--border-light); box-shadow:var(--shadow-sm);">
+        <div style="border-bottom:2px solid var(--irctc-blue); padding-bottom:12px; margin-bottom:20px;">
+          <h2 style="color:var(--irctc-blue); font-size:1.3rem; font-weight:800;">PNR STATUS ENQUIRY</h2>
+          <small style="color:var(--text-muted);">Real-time enquiry against Oracle <code>BOOKING</code> & <code>PASSENGER</code> tables</small>
         </div>
-        <button class="btn-primary" onclick="lookupPNR()" style="margin-top: 10px;">Check Status</button>
-        <div id="pnr-result-box" class="pnr-box hidden"></div>
+
+        <form onsubmit="handlePNRSearch(event)">
+          <div style="margin-bottom:16px;">
+            <label style="display:block; font-size:0.8rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px;">Enter 10-Digit / Sequence PNR Number</label>
+            <input type="text" id="pnr-search-input" required placeholder="e.g. PNR100001 or PNR000004" style="width:100%; padding:14px; font-size:1.05rem; font-weight:700; letter-spacing:1px; border:2px solid var(--border-color); border-radius:var(--radius-md);">
+          </div>
+          <button type="submit" class="btn-irctc-search" style="width:100%; justify-content:center;">Get PNR Status ➔</button>
+        </form>
+
+        <div id="pnr-result-card" class="hidden" style="margin-top:24px;"></div>
       </div>
     </section>
 
     <!-- VIEW 5: USER BOOKINGS PORTAL -->
     <section id="portal-layout" class="layout hidden">
-      <div class="card">
-        <h2>My Journey Reservations</h2>
-        <p class="subtitle">Fetched from Oracle <code>USER_BOOKINGS</code> View</p>
-        <div id="my-bookings-list" class="results-list"></div>
+      <div style="background:white; border-radius:var(--radius-lg); padding:24px; border:1px solid var(--border-light); box-shadow:var(--shadow-sm);">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--irctc-blue); padding-bottom:12px; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+          <div>
+            <h2 style="color:var(--irctc-blue); font-size:1.3rem; font-weight:800;">MY JOURNEY RESERVATIONS</h2>
+            <small style="color:var(--text-muted);">Fetched from Oracle View: <code>USER_BOOKINGS</code></small>
+          </div>
+          <button class="btn-disha-search" onclick="loadMyBookings()">🔄 Refresh Bookings</button>
+        </div>
+
+        <div id="portal-bookings-list">
+          <p style="text-align:center; padding:30px; color:var(--text-muted);">Loading user reservations from Oracle Database...</p>
+        </div>
       </div>
     </section>
 
-    <!-- VIEW 6: ADMIN DASHBOARD -->
+    <!-- VIEW 6: ADMIN DBMS CONTROL CENTER -->
     <section id="admin-layout" class="layout hidden">
-      <div class="admin-grid">
-        <div class="admin-stat-card">
+      <div class="admin-metrics-grid">
+        <div class="admin-metric-card">
           <small>Total Trains</small>
-          <h3>3 Trains</h3>
+          <h3 id="adm-stat-trains">--</h3>
         </div>
-        <div class="admin-stat-card">
+        <div class="admin-metric-card">
           <small>Total Stations</small>
-          <h3>5 Stations</h3>
+          <h3 id="adm-stat-stations">--</h3>
         </div>
-        <div class="admin-stat-card">
+        <div class="admin-metric-card">
           <small>Active Schedules</small>
-          <h3>4 Schedules</h3>
+          <h3 id="adm-stat-schedules">--</h3>
         </div>
-        <div class="admin-stat-card">
+        <div class="admin-metric-card">
           <small>Registered Users</small>
-          <h3>3 Users</h3>
+          <h3 id="adm-stat-users">--</h3>
+        </div>
+        <div class="admin-metric-card">
+          <small>Total Bookings</small>
+          <h3 id="adm-stat-bookings">--</h3>
+        </div>
+        <div class="admin-metric-card">
+          <small>Total Revenue</small>
+          <h3 id="adm-stat-revenue">--</h3>
         </div>
       </div>
 
-      <div class="card" style="margin-top: 20px;">
-        <h2>Oracle Database Entities Management</h2>
-        <div class="admin-actions">
-          <button class="btn-secondary" onclick="alert('TRAIN table records loaded')">Manage Trains</button>
-          <button class="btn-secondary" onclick="alert('STATION table records loaded')">Manage Stations</button>
-          <button class="btn-secondary" onclick="alert('SCHEDULE table records loaded')">Manage Schedules</button>
-          <button class="btn-secondary" onclick="alert('CANCELLATION logs loaded')">View Cancellations</button>
+      <div style="background:white; border-radius:var(--radius-lg); padding:24px; border:1px solid var(--border-light); box-shadow:var(--shadow-sm);">
+        <div class="admin-tabs-nav">
+          <button class="admin-tab-btn active" onclick="switchAdminTab('trains', this)">🚆 All Trains</button>
+          <button class="admin-tab-btn" onclick="switchAdminTab('stations', this)">📍 Stations</button>
+          <button class="admin-tab-btn" onclick="switchAdminTab('schedules', this)">📅 Schedules</button>
+          <button class="admin-tab-btn" onclick="switchAdminTab('cancellations', this)">❌ Cancellations & Refunds</button>
         </div>
+
+        <div class="admin-table-wrapper">
+          <div id="admin-tab-content">
+            <p style="text-align:center; padding:30px; color:var(--text-muted);">Loading database records...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 7: AUTHENTICATION (SIGN IN / REGISTER) -->
+    <section id="auth-layout" class="layout hidden">
+      <div style="max-width:540px; margin:0 auto; background:white; border-radius:var(--radius-lg); padding:28px; border:1px solid var(--border-light); box-shadow:var(--shadow-sm);">
+        <div style="display:flex; gap:10px; margin-bottom:24px; border-bottom:2px solid var(--border-light);">
+          <button id="auth-tab-login" class="admin-tab-btn active" onclick="toggleAuthMode('login')" style="flex:1;">Sign In</button>
+          <button id="auth-tab-register" class="admin-tab-btn" onclick="toggleAuthMode('register')" style="flex:1;">Register New User</button>
+        </div>
+
+        <!-- Login Form -->
+        <form id="auth-login-form" onsubmit="handleLoginSubmit(event)">
+          <h3 style="color:var(--irctc-blue); font-size:1.2rem; font-weight:800; margin-bottom:4px;">User Login</h3>
+          <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:18px;">Access reservations and confirmed tickets</p>
+
+          <div style="margin-bottom:14px;">
+            <label style="display:block; font-size:0.78rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Email Address</label>
+            <input type="email" id="login-input-email" required value="arjun@gmail.com" placeholder="arjun@gmail.com" style="width:100%; padding:12px; border:1.5px solid var(--border-color); border-radius:6px; font-weight:600;">
+          </div>
+          <div style="margin-bottom:20px;">
+            <label style="display:block; font-size:0.78rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Password</label>
+            <input type="password" id="login-input-password" required value="password123" placeholder="••••••••" style="width:100%; padding:12px; border:1.5px solid var(--border-color); border-radius:6px; font-weight:600;">
+          </div>
+          <button type="submit" class="btn-irctc-search" style="width:100%; justify-content:center;">Sign In to RailSafari ➔</button>
+        </form>
+
+        <!-- Register Form -->
+        <form id="auth-register-form" class="hidden" onsubmit="handleRegisterSubmit(event)">
+          <h3 style="color:var(--irctc-blue); font-size:1.2rem; font-weight:800; margin-bottom:4px;">Create New User Account</h3>
+          <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:18px;">Inserts record into Oracle <code>USERS</code> table via <code>USER_SEQ</code></p>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block; font-size:0.78rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Full Name</label>
+            <input type="text" id="reg-input-name" required placeholder="Arjun Menon" style="width:100%; padding:10px; border:1.5px solid var(--border-color); border-radius:6px; font-weight:600;">
+          </div>
+          <div style="margin-bottom:12px;">
+            <label style="display:block; font-size:0.78rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Phone Number</label>
+            <input type="tel" id="reg-input-phone" required placeholder="9876543210" style="width:100%; padding:10px; border:1.5px solid var(--border-color); border-radius:6px; font-weight:600;">
+          </div>
+          <div style="margin-bottom:12px;">
+            <label style="display:block; font-size:0.78rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Email Address</label>
+            <input type="email" id="reg-input-email" required placeholder="arjun@gmail.com" style="width:100%; padding:10px; border:1.5px solid var(--border-color); border-radius:6px; font-weight:600;">
+          </div>
+          <div style="margin-bottom:12px;">
+            <label style="display:block; font-size:0.78rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">IRCTC Number (Optional)</label>
+            <input type="text" id="reg-input-irctc" placeholder="IRCTC_ARJUN" style="width:100%; padding:10px; border:1.5px solid var(--border-color); border-radius:6px; font-weight:600;">
+          </div>
+          <div style="margin-bottom:20px;">
+            <label style="display:block; font-size:0.78rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Password</label>
+            <input type="password" id="reg-input-password" required placeholder="••••••••" style="width:100%; padding:10px; border:1.5px solid var(--border-color); border-radius:6px; font-weight:600;">
+          </div>
+          <button type="submit" class="btn-irctc-search" style="width:100%; justify-content:center;">Register Account ➔</button>
+        </form>
       </div>
     </section>
 
   </main>
+
+  <!-- PAYMENT GATEWAY MODAL (IRCTC iPay) -->
+  <div id="payment-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-light); padding-bottom:12px; margin-bottom:16px;">
+        <div>
+          <h3 style="color:var(--irctc-blue); font-size:1.15rem; font-weight:800;">IRCTC iPay Gateway</h3>
+          <small style="color:var(--text-muted);">Secure Payment Verification</small>
+        </div>
+        <span style="background:#e0f2fe; color:#0369a1; font-weight:700; font-size:0.75rem; padding:3px 8px; border-radius:12px;">🔒 256-Bit SSL</span>
+      </div>
+
+      <div style="background:#f8fafc; padding:14px; border-radius:8px; margin-bottom:16px; border:1px dashed var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:0.9rem; font-weight:700; color:var(--text-muted);">Transaction Amount:</span>
+        <strong id="modal-pay-amount" style="font-size:1.3rem; color:var(--irctc-green); font-weight:800;">₹481.00</strong>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <label style="display:block; font-size:0.78rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px;">Select Payment Mode</label>
+        <select id="modal-pay-method" style="width:100%; padding:12px; border:1.5px solid var(--border-color); border-radius:6px; font-weight:700;">
+          <option value="UPI">UPI (Google Pay, PhonePe, Paytm, BHIM)</option>
+          <option value="CREDIT_CARD">Credit / Debit Card (Visa, RuPay, MasterCard)</option>
+          <option value="NET_BANKING">Net Banking (SBI, HDFC, ICICI, Axis)</option>
+        </select>
+      </div>
+
+      <div style="display:flex; gap:10px;">
+        <button type="button" class="btn-disha-search" onclick="closePaymentModal()" style="flex:1;">Cancel</button>
+        <button type="button" id="btn-confirm-pay" class="btn-irctc-search" onclick="executeBookingPayment()" style="flex:2; justify-content:center;">Pay & Execute BOOK_TICKET ➔</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
 
   <script src="app.js"></script>
 </body>

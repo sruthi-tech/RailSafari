@@ -68,10 +68,17 @@ async function searchTrains({ source, destination, date }) {
   const result = await db.execute(sql, binds);
 
   const trains = (result.rows || []).map(row => ({
+    id: row.SCHEDULE_ID,
     scheduleId: row.SCHEDULE_ID,
     trainNumber: row.TRAIN_NUMBER,
     trainName: row.TRAIN_NAME,
     trainType: row.TRAIN_TYPE || 'EXPRESS',
+    from: row.SOURCE_STATION_NAME,
+    to: row.DESTINATION_STATION_NAME,
+    source: row.SOURCE_STATION_NAME,
+    destination: row.DESTINATION_STATION_NAME,
+    fromCode: row.SOURCE_STATION_CODE,
+    toCode: row.DESTINATION_STATION_CODE,
     sourceStation: {
       code: row.SOURCE_STATION_CODE,
       name: row.SOURCE_STATION_NAME,
@@ -85,9 +92,14 @@ async function searchTrains({ source, destination, date }) {
       state: row.DESTINATION_STATE
     },
     journeyDate: row.JOURNEY_DATE,
-    status: row.STATUS,
-    departureTime: row.DEPARTURE_TIME || 'N/A',
-    arrivalTime: row.ARRIVAL_TIME || 'N/A'
+    status: row.STATUS || 'AVAILABLE',
+    departureTime: row.DEPARTURE_TIME || '08:00 AM',
+    arrivalTime: row.ARRIVAL_TIME || '02:30 PM',
+    departure: row.DEPARTURE_TIME || '08:00 AM',
+    arrival: row.ARRIVAL_TIME || '02:30 PM',
+    duration: '6h 30m',
+    fare: 450,
+    price: 450
   }));
 
   return trains;
@@ -215,8 +227,107 @@ async function getAllStations() {
   }));
 }
 
+/**
+ * Fetch detailed seats list for a schedule with live status
+ */
+async function getScheduleSeats(scheduleId) {
+  const sql = `
+    SELECT 
+      S.SEAT_ID,
+      S.SEAT_NUMBER,
+      S.SEAT_TYPE,
+      S.SEAT_STATUS,
+      C.COACH_ID,
+      C.COACH_NUMBER,
+      C.CLASS_TYPE
+    FROM SEAT S
+    JOIN COACH C ON S.COACH_ID = C.COACH_ID
+    JOIN SCHEDULE SC ON SC.TRAIN_ID = C.TRAIN_ID
+    WHERE SC.SCHEDULE_ID = :scheduleId
+    ORDER BY C.COACH_NUMBER, TO_NUMBER(REGEXP_SUBSTR(S.SEAT_NUMBER, '^[0-9]+'))
+  `;
+  const result = await db.execute(sql, { scheduleId: Number(scheduleId) });
+  return (result.rows || []).map(row => ({
+    seatId: row.SEAT_ID,
+    seatNumber: row.SEAT_NUMBER,
+    seatType: row.SEAT_TYPE || 'BERTH',
+    status: row.SEAT_STATUS || 'AVAILABLE',
+    coachId: row.COACH_ID,
+    coachNumber: row.COACH_NUMBER,
+    classType: row.CLASS_TYPE
+  }));
+}
+
+/**
+ * Execute Oracle stored function CALCULATE_FARE
+ */
+async function calculateFare({ distance, classType, passengers = 1 }) {
+  const sql = `SELECT CALCULATE_FARE(:dist, :cls, :pax) AS FARE FROM DUAL`;
+  const result = await db.execute(sql, {
+    dist: Number(distance) || 210,
+    cls: (classType || '3A').trim().toUpperCase(),
+    pax: Number(passengers) || 1
+  });
+  return (result.rows && result.rows[0]) ? result.rows[0].FARE : 420;
+}
+
+/**
+ * Fetch Admin DBMS overview & metrics
+ */
+async function getAdminOverview() {
+  const trainCount = await db.execute('SELECT COUNT(*) AS C FROM TRAIN');
+  const stationCount = await db.execute('SELECT COUNT(*) AS C FROM STATION');
+  const scheduleCount = await db.execute('SELECT COUNT(*) AS C FROM SCHEDULE');
+  const userCount = await db.execute('SELECT COUNT(*) AS C FROM USERS');
+  const bookingCount = await db.execute('SELECT COUNT(*) AS C FROM BOOKING');
+  const revenueRes = await db.execute("SELECT NVL(SUM(TOTAL_FARE), 0) AS REV FROM BOOKING WHERE BOOKING_STATUS = 'CONFIRMED'");
+
+  const trainsRes = await db.execute('SELECT TRAIN_ID, TRAIN_NUMBER, TRAIN_NAME, TRAIN_TYPE FROM TRAIN ORDER BY TRAIN_NUMBER');
+  const stationsRes = await db.execute('SELECT STATION_ID, STATION_CODE, STATION_NAME, CITY, STATE FROM STATION ORDER BY STATION_CODE');
+  const schedulesRes = await db.execute(`
+    SELECT 
+      SC.SCHEDULE_ID, T.TRAIN_NUMBER, T.TRAIN_NAME, 
+      SS.STATION_CODE AS FROM_CODE, DS.STATION_CODE AS TO_CODE,
+      TO_CHAR(SC.JOURNEY_DATE, 'YYYY-MM-DD') AS JOURNEY_DATE,
+      SC.STATUS
+    FROM SCHEDULE SC
+    JOIN TRAIN T ON SC.TRAIN_ID = T.TRAIN_ID
+    JOIN STATION SS ON SC.SOURCE_STATION_ID = SS.STATION_ID
+    JOIN STATION DS ON SC.DESTINATION_STATION_ID = DS.STATION_ID
+    ORDER BY SC.JOURNEY_DATE
+  `);
+  const cancellationsRes = await db.execute(`
+    SELECT 
+      C.CANCELLATION_ID, C.BOOKING_ID, B.PNR,
+      TO_CHAR(C.CANCELLATION_DATE, 'YYYY-MM-DD HH24:MI') AS CANCELLATION_DATE,
+      C.REASON, C.REFUND_AMOUNT, U.FULL_NAME AS USER_NAME
+    FROM CANCELLATION C
+    JOIN BOOKING B ON C.BOOKING_ID = B.BOOKING_ID
+    JOIN USERS U ON B.USER_ID = U.USER_ID
+    ORDER BY C.CANCELLATION_ID DESC
+  `);
+
+  return {
+    metrics: {
+      totalTrains: trainCount.rows[0].C,
+      totalStations: stationCount.rows[0].C,
+      activeSchedules: scheduleCount.rows[0].C,
+      registeredUsers: userCount.rows[0].C,
+      totalBookings: bookingCount.rows[0].C,
+      totalRevenue: revenueRes.rows[0].REV
+    },
+    trains: trainsRes.rows,
+    stations: stationsRes.rows,
+    schedules: schedulesRes.rows,
+    cancellations: cancellationsRes.rows
+  };
+}
+
 module.exports = {
   searchTrains,
   getSeatAvailability,
-  getAllStations
+  getAllStations,
+  getScheduleSeats,
+  calculateFare,
+  getAdminOverview
 };

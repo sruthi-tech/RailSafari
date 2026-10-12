@@ -36,6 +36,8 @@ async function register(req, res) {
     return res.status(201).json({
       success: true,
       message: 'User registered successfully.',
+      userId: user.userId,
+      fullName: user.fullName,
       data: user
     });
   } catch (error) {
@@ -70,6 +72,8 @@ async function login(req, res) {
     return res.status(200).json({
       success: true,
       message: 'Login successful.',
+      userId: user.userId,
+      fullName: user.fullName,
       data: user
     });
   } catch (error) {
